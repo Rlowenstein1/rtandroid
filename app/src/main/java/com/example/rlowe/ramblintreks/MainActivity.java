@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap){
         map = googleMap;
+        setUpMap();
 
     }
 
@@ -165,6 +166,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void drawHandler(JSONObject route){
-        //TODO
+
     }
 }
