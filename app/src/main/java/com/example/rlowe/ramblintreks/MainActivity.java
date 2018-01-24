@@ -1,5 +1,6 @@
 package com.example.rlowe.ramblintreks;
 
+import android.graphics.Camera;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,12 +24,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -127,10 +130,10 @@ public class MainActivity extends AppCompatActivity
         //TODO
 
         EditText startLatText = (EditText)findViewById(R.id.startLat);
-        final double startLatitude = Double.parseDouble(startLatText.getText().toString());
+        double startLatitude = Double.parseDouble(startLatText.getText().toString());
 
         EditText startLongText = (EditText)findViewById(R.id.startLong);
-        final double startLongitude = Double.parseDouble(startLongText.getText().toString());
+        double startLongitude = Double.parseDouble(startLongText.getText().toString());
 
         EditText endLatText = (EditText)findViewById(R.id.endLat);
         double endLatitude = Double.parseDouble(endLatText.getText().toString());
@@ -173,17 +176,43 @@ public class MainActivity extends AppCompatActivity
 
     public void drawHandler(JSONObject route){
         List<LatLng> coordinates = new ArrayList<>();
-
+        JSONArray out;
         try {
-            JSONArray out = route.toJSONArray(route.names());
-
-            Integer i;
-            for (i = 0; i < out.length(); i ++) {
+            out = route.toJSONArray(route.names());
+            for (int i = 0; i < out.length(); i ++) {
                 //DEBUG
-                Object q = out.get(i);
-                String s = out.toString();
+                String r = out.getString(i);
 
+                String[] latlong = r.split(",");
+                String[] latS = latlong[0].split(":");
+                String[] longS = latlong[1].split(":");
+                longS[1] = longS[1].substring(0, longS[1].length()-1);
+
+                double lat = Double.parseDouble(latS[1]);
+                double lng = Double.parseDouble(longS[1]);
+
+                LatLng co = new LatLng(lat, lng);
+                coordinates.add(co);
             }
+
+        map.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .addAll(coordinates));
+
+
+
+
+        CameraPosition curr = map.getCameraPosition();;
+
+        CameraPosition cameraPosition = new CameraPosition.Builder(curr)
+                .target(coordinates.get(0))
+                .zoom(20)
+                .bearing(270)
+                .tilt(60)
+                .build();
+
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
         } catch (JSONException e) {
             e.getMessage();
         }
