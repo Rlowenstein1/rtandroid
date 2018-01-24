@@ -20,17 +20,23 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity
@@ -133,6 +139,7 @@ public class MainActivity extends AppCompatActivity
         double endLongitude = Double.parseDouble(endLongText.getText().toString());
 
         JSONObject coords = new JSONObject();
+        JSONArray c = new JSONArray();
         try {
             coords.put("startLatitude", startLatitude);
             coords.put("startLongitude", startLongitude);
@@ -148,15 +155,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(JSONObject response) {
                 //TODO: Draw polyline with response object
-                drawHandler(response);
                 Toast.makeText(getApplicationContext(),"Received!", (short)20).show();
+                drawHandler(response);
+
 
             }
         }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                // TODO Auto-generated method stub
+                Toast.makeText(getApplicationContext(),"Error!", (short)20).show();
+
 
             }
         });
@@ -166,6 +175,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void drawHandler(JSONObject route){
+        List<LatLng> coordinates = new ArrayList<>();
+        int numPoints = route.length();
 
     }
 }
