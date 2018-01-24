@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(JSONObject response) {
                 Toast.makeText(getApplicationContext(),"Received!", (short)20).show();
-
+                drawHandler(response);
 
             }
         }, new Response.ErrorListener() {
@@ -173,7 +173,20 @@ public class MainActivity extends AppCompatActivity
 
     public void drawHandler(JSONObject route){
         List<LatLng> coordinates = new ArrayList<>();
-        int numPoints = route.length();
 
+        try {
+            JSONArray out = route.toJSONArray(route.names());
+
+            Integer i;
+            for (i = 0; i < out.length(); i ++) {
+                //DEBUG
+                Object q = out.get(i);
+                String s = out.toString();
+
+            }
+        } catch (JSONException e) {
+            e.getMessage();
+        }
     }
+
 }
