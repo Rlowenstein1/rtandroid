@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity
         double endLongitude = Double.parseDouble(endLongText.getText().toString());
 
         JSONObject coords = new JSONObject();
-        JSONArray c = new JSONArray();
         try {
             coords.put("startLatitude", startLatitude);
             coords.put("startLongitude", startLongitude);
@@ -154,9 +153,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onResponse(JSONObject response) {
-                //TODO: Draw polyline with response object
                 Toast.makeText(getApplicationContext(),"Received!", (short)20).show();
-                drawHandler(response);
 
 
             }
@@ -164,7 +161,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),"Error!", (short)20).show();
+                Toast.makeText(getApplicationContext(),error.getMessage(), (short)20).show();
 
 
             }
