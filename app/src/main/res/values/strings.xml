@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Ramblin-Treks</string>
+    <string name="title_activity_main">Ramblin Treks</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="sting">Stingerette</string>
+    <string name="sched">Schedule</string>
+    <string name="about">About</string>
+    <string name="transPref">Transportation Preferences</string>
+    <string name="google_maps_key">AIzaSyCmvRi0sf8G9PjswcJrBOTvDdBfkbrqfFI</string>
+</resources>
