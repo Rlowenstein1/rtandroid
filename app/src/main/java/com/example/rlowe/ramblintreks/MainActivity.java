@@ -1,6 +1,7 @@
 package com.example.rlowe.ramblintreks;
 
 import android.graphics.Camera;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 
 import org.json.*;
 
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity
 
     RequestQueue queue;
     private GoogleMap map;
+    public List lines;
 
 
     @Override
@@ -79,8 +82,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void setUpMap() {
-        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(33.7756, -84.3963)));
+        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        map.setBuildingsEnabled(true);
+        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(33.776433, -84.4015629)));
         map.moveCamera(CameraUpdateFactory.zoomTo(15));
+        lines = new ArrayList<>();
     }
     @Override
     public void onBackPressed() {
@@ -175,6 +181,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void drawHandler(JSONObject route){
+        map.clear();
+        lines.clear();
         List<LatLng> coordinates = new ArrayList<>();
         JSONArray out;
         try {
@@ -195,14 +203,17 @@ public class MainActivity extends AppCompatActivity
                 coordinates.add(co);
             }
 
-        map.addPolyline(new PolylineOptions()
-                .clickable(true)
-                .addAll(coordinates));
+        Polyline line = map.addPolyline(new PolylineOptions().clickable(true).addAll(coordinates));
+        line.setEndCap(new RoundCap());
+        line.setStartCap(new RoundCap());
+        line.setColor(Color.BLUE);
+        line.setWidth(12);
+
+        lines.add(line);
 
 
 
-
-        CameraPosition curr = map.getCameraPosition();;
+        CameraPosition curr = map.getCameraPosition();
 
         CameraPosition cameraPosition = new CameraPosition.Builder(curr)
                 .target(coordinates.get(0))
