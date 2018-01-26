@@ -282,20 +282,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void pathHandler(View view) {
-
-        EditText startLatText = (EditText)findViewById(R.id.startLat);
-        startLatText.setText(Double.toString(mLastKnownLocation.getLatitude()));
-        EditText startLongText = (EditText)findViewById(R.id.startLong);
-        startLongText.setText(Double.toString(mLastKnownLocation.getLongitude()));
-        //double startLatitude = Double.parseDouble(startLatText.getText().toString());
         double startLatitude = mLastKnownLocation.getLatitude();
-        //EditText startLongText = (EditText)findViewById(R.id.startLong);
         double startLongitude = mLastKnownLocation.getLongitude();
-
         EditText endLatText = (EditText)findViewById(R.id.endLat);
-        double endLatitude = Double.parseDouble(endLatText.getText().toString());
-
         EditText endLongText = (EditText)findViewById(R.id.endLong);
+        double endLatitude = Double.parseDouble(endLatText.getText().toString());
         double endLongitude = Double.parseDouble(endLongText.getText().toString());
 
         JSONObject coords = new JSONObject();
