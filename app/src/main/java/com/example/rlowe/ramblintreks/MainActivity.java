@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity
 
     RequestQueue queue;
     private GoogleMap map;
-    public List lines;
+    List<LatLng> coordinates;
 
 
     @Override
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity
         map.setBuildingsEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(33.776433, -84.4015629)));
         map.moveCamera(CameraUpdateFactory.zoomTo(15));
-        lines = new ArrayList<>();
+        coordinates = new ArrayList<>();
     }
     @Override
     public void onBackPressed() {
@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(JSONObject response) {
                 Toast.makeText(getApplicationContext(),"Received!", (short)20).show();
+                coordinates.clear();
                 drawHandler(response);
 
             }
@@ -182,9 +183,8 @@ public class MainActivity extends AppCompatActivity
 
     public void drawHandler(JSONObject route){
         map.clear();
-        lines.clear();
-        List<LatLng> coordinates = new ArrayList<>();
         JSONArray out;
+
         try {
             out = route.toJSONArray(route.names());
             for (int i = 0; i < out.length(); i ++) {
@@ -203,26 +203,22 @@ public class MainActivity extends AppCompatActivity
                 coordinates.add(co);
             }
 
-        Polyline line = map.addPolyline(new PolylineOptions().clickable(true).addAll(coordinates));
-        line.setEndCap(new RoundCap());
-        line.setStartCap(new RoundCap());
-        line.setColor(Color.BLUE);
-        line.setWidth(12);
+            Polyline line = map.addPolyline(new PolylineOptions().clickable(true).addAll(coordinates));
+            line.setEndCap(new RoundCap());
+            line.setStartCap(new RoundCap());
+            line.setColor(Color.BLUE);
+            line.setWidth(12);
 
-        lines.add(line);
+            CameraPosition curr = map.getCameraPosition();
 
-
-
-        CameraPosition curr = map.getCameraPosition();
-
-        CameraPosition cameraPosition = new CameraPosition.Builder(curr)
+            CameraPosition cameraPosition = new CameraPosition.Builder(curr)
                 .target(coordinates.get(0))
                 .zoom(20)
                 .bearing(270)
                 .tilt(60)
                 .build();
 
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         } catch (JSONException e) {
             e.getMessage();
