@@ -26,33 +26,35 @@
             android:id="@+id/startLat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:defaultFocusHighlightEnabled="false"
             android:ems="10"
-            android:inputType="number|numberSigned|numberDecimal"
-            android:text="Start Lat" />
+            android:hint="Start Latitude"
+            android:inputType="numberSigned|numberDecimal" />
 
         <EditText
             android:id="@+id/startLong"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="number|numberSigned|numberDecimal"
-            android:text="Start Long" />
+            android:hint="Start Longitude"
+            android:inputType="numberSigned|numberDecimal" />
 
         <EditText
             android:id="@+id/endLat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:defaultFocusHighlightEnabled="true"
             android:ems="10"
-            android:inputType="number|numberSigned|numberDecimal"
-            android:text="End Lat" />
+            android:hint="End Latitude"
+            android:inputType="numberSigned|numberDecimal" />
 
         <EditText
             android:id="@+id/endLong"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="number|numberSigned|numberDecimal"
-            android:text="End Long" />
+            android:hint="End Longitude"
+            android:inputType="numberSigned|numberDecimal" />
 
         <Button
             android:id="@+id/submitButton"
