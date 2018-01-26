@@ -189,8 +189,7 @@ public class MainActivity extends AppCompatActivity
             out = route.toJSONArray(route.names());
             for (int i = 0; i < out.length(); i ++) {
                 //DEBUG
-                String r = out.getString(i);
-
+                String r = route.getJSONObject(Integer.toString(i)).toString();
                 String[] latlong = r.split(",");
                 String[] latS = latlong[0].split(":");
                 String[] longS = latlong[1].split(":");
@@ -201,6 +200,7 @@ public class MainActivity extends AppCompatActivity
 
                 LatLng co = new LatLng(lat, lng);
                 coordinates.add(co);
+
             }
 
             Polyline line = map.addPolyline(new PolylineOptions().clickable(true).addAll(coordinates));
