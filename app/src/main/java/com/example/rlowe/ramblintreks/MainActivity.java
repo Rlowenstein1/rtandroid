@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity
 
     //the list of coordinates to be used to draw path on map
     public List<LatLng> coordinates;
-    public List<LatLng> bus_ride;
 
     //local collection of GT buildings with coordinates
     public JSONObject gtBuildings;
@@ -236,7 +235,6 @@ public class MainActivity extends AppCompatActivity
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         map.setBuildingsEnabled(true);
         coordinates = new ArrayList<>();
-        bus_ride = new ArrayList<>();
     }
 
     @Override
@@ -308,7 +306,7 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(JSONObject response) {
                 Toast.makeText(getApplicationContext(),"Received!", (short)20).show();
                 coordinates.clear();
-                drawHandler(response    );
+                drawHandler(response);
             }
         }, new Response.ErrorListener() {
 
@@ -324,62 +322,143 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Method that returns a LatLng based on an index into a JSONObject
+     * @param i index of point
+     * @param r JSONObject to parse
+     * @return LatLng object at index i of r
+     */
+    public LatLng getPoint(int i, JSONObject r) {
+        try {
+            String curr = r.getJSONObject(Integer.toString(i)).toString();
+            String[] latLong = curr.split(",");
+            String[] latS = latLong[1].split(":");
+            String[] longS = latLong[2].split(":");
+            longS[1] = longS[1].substring(0, longS[1].length()-1);
+
+            double lat = Double.parseDouble(latS[1]);
+            double lng = Double.parseDouble(longS[1]);
+
+            LatLng co = new LatLng(lat, lng);
+            return co;
+
+        } catch (JSONException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Method that returns color of point i in jsonobject r
+     * @param i index of point
+     * @param r JSONObject to parse
+     * @return Color of point at index i in r
+     */
+    public int getColor(int i, JSONObject r) {
+        try {
+            String curr_point = r.getJSONObject(Integer.toString(i)).toString();
+            String[] latLong = curr_point.split(",");
+            String[] color = latLong[0].split(":");
+            int curr_col = Color.parseColor(color[1].substring(1, color[1].length()-1));
+            return curr_col;
+
+        } catch (JSONException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return 0;
+    }
+
+    public void handleSnappedPath(JSONObject r, int c) {
+        try {
+            List<LatLng> p = new ArrayList<>();
+            JSONArray points = r.getJSONArray("snappedPoints");
+            for (int i = 0; i < points.length(); i++) {
+                JSONObject point = points.getJSONObject(i);
+                String loc = point.getString("location");
+                String[] latLong = loc.split(",");
+                String[] lat = latLong[0].split(":");
+                String[] lon = latLong[1].split(":");
+                double latP = Double.parseDouble(lat[1]);
+                double longP = Double.parseDouble(lon[1].substring(0, lon[1].length()-1));
+                LatLng newPoint = new LatLng(latP, longP);
+                p.add(newPoint);
+            }
+
+            createLine(c, p);
+            p.clear();
+
+        } catch (JSONException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void createLine(int c, List<LatLng> p) {
+        Polyline walkLine = map.addPolyline(new PolylineOptions().clickable(true).addAll(p));
+        walkLine.setEndCap(new RoundCap());
+        walkLine.setStartCap(new RoundCap());
+        walkLine.setColor(c);
+        walkLine.setWidth(12);
+        p.clear();
+    }
+
+
     public void drawHandler(JSONObject route){
         map.clear();
         JSONArray out;
-        String walk_col = "#ff0000";
-        String bus_col = "#000000";
+        List<LatLng> tempPoints = new ArrayList<>();
 
         try {
             out = route.toJSONArray(route.names());
+
             for (int i = 0; i < out.length() - 1; i ++) {
-                //DEBUG
+                final int curr_col = getColor(i, route);
+                int next_col = getColor(i+1, route);
 
-                String r = route.getJSONObject(Integer.toString(i)).toString();
-                String[] latlong = r.split(",");
-                String[] color = latlong[0].split(":");
-                String curr_col = color[1].substring(1, color[1].length()-1);
-                if (!curr_col.equals(walk_col)){
-                    String[] latS = latlong[1].split(":");
-                    String[] longS = latlong[2].split(":");
-                    longS[1] = longS[1].substring(0, longS[1].length()-1);
+                LatLng curr_point = getPoint(i, route);
 
-                    double lat = Double.parseDouble(latS[1]);
-                    double lng = Double.parseDouble(longS[1]);
+                if (curr_col == next_col) {
+                    tempPoints.add(curr_point);
+                } else if (curr_col == Color.parseColor("#ffcc00") && curr_col != next_col){
+                    tempPoints.add(curr_point);
 
-                    LatLng co = new LatLng(lat, lng);
-                    bus_ride.add(co);
-                    bus_col = curr_col;
+                    //Create Snap-To-Road Path
+                    String request = "path=";
+                    for (int j = 0; j < tempPoints.size(); j++) {
+                        request = request.concat(Double.toString(tempPoints.get(j).latitude) + "," + Double.toString(tempPoints.get(j).longitude));
+                        if (j != tempPoints.size()-1) {
+                            request = request.concat("|");
+                        }
+                    }
+
+                    String url = "https://roads.googleapis.com/v1/snapToRoads?" + request + "&interpolate=true" + "&key=AIzaSyCnvTOVY8FCw7S73Bv-gUOgG4b0Owe1iT0";
+                    JsonObjectRequest snapPath = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            handleSnappedPath(response, curr_col);
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+
+                    tempPoints.clear();
+                    queue.add(snapPath);
+
                 } else {
-                    String[] latS = latlong[1].split(":");
-                    String[] longS = latlong[2].split(":");
-                    longS[1] = longS[1].substring(0, longS[1].length() - 1);
-
-                    double lat = Double.parseDouble(latS[1]);
-                    double lng = Double.parseDouble(longS[1]);
-
-                    LatLng co = new LatLng(lat, lng);
-                    coordinates.add(co);
-                    walk_col = curr_col;
+                    tempPoints.add(curr_point);
+                    createLine(curr_col, tempPoints);
+                    tempPoints.clear();
                 }
-
+            coordinates.add(curr_point);
             }
+
             int l = out.length()-1;
             String bearing = Double.toString(route.getDouble("orientation"));
             float b = Float.valueOf(bearing);
-
-
-            Polyline walkline = map.addPolyline(new PolylineOptions().clickable(true).addAll(coordinates));
-            walkline.setEndCap(new RoundCap());
-            walkline.setStartCap(new RoundCap());
-            walkline.setColor(Color.parseColor(walk_col));
-            walkline.setWidth(12);
-
-            Polyline busline = map.addPolyline(new PolylineOptions().clickable(true).addAll(bus_ride));
-            busline.setEndCap(new RoundCap());
-            busline.setStartCap(new RoundCap());
-            busline.setColor(Color.parseColor(bus_col));
-            busline.setWidth(12);
 
             CameraPosition curr = map.getCameraPosition();
 
