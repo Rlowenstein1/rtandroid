@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity
 
     //the list of coordinates to be used to draw path on map
     public List<LatLng> coordinates;
+    public List<LatLng> bus_ride;
 
     //local collection of GT buildings with coordinates
     public JSONObject gtBuildings;
@@ -235,6 +236,7 @@ public class MainActivity extends AppCompatActivity
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         map.setBuildingsEnabled(true);
         coordinates = new ArrayList<>();
+        bus_ride = new ArrayList<>();
     }
 
     @Override
@@ -325,25 +327,41 @@ public class MainActivity extends AppCompatActivity
     public void drawHandler(JSONObject route){
         map.clear();
         JSONArray out;
-        String col = "#FFFFFF";
+        String walk_col = "#ff0000";
+        String bus_col = "#000000";
 
         try {
             out = route.toJSONArray(route.names());
             for (int i = 0; i < out.length() - 1; i ++) {
                 //DEBUG
+
                 String r = route.getJSONObject(Integer.toString(i)).toString();
                 String[] latlong = r.split(",");
                 String[] color = latlong[0].split(":");
-                col = color[1].substring(1, color[1].length()-1);
-                String[] latS = latlong[1].split(":");
-                String[] longS = latlong[2].split(":");
-                longS[1] = longS[1].substring(0, longS[1].length()-1);
+                String curr_col = color[1].substring(1, color[1].length()-1);
+                if (!curr_col.equals(walk_col)){
+                    String[] latS = latlong[1].split(":");
+                    String[] longS = latlong[2].split(":");
+                    longS[1] = longS[1].substring(0, longS[1].length()-1);
 
-                double lat = Double.parseDouble(latS[1]);
-                double lng = Double.parseDouble(longS[1]);
+                    double lat = Double.parseDouble(latS[1]);
+                    double lng = Double.parseDouble(longS[1]);
 
-                LatLng co = new LatLng(lat, lng);
-                coordinates.add(co);
+                    LatLng co = new LatLng(lat, lng);
+                    bus_ride.add(co);
+                    bus_col = curr_col;
+                } else {
+                    String[] latS = latlong[1].split(":");
+                    String[] longS = latlong[2].split(":");
+                    longS[1] = longS[1].substring(0, longS[1].length() - 1);
+
+                    double lat = Double.parseDouble(latS[1]);
+                    double lng = Double.parseDouble(longS[1]);
+
+                    LatLng co = new LatLng(lat, lng);
+                    coordinates.add(co);
+                    walk_col = curr_col;
+                }
 
             }
             int l = out.length()-1;
@@ -351,11 +369,17 @@ public class MainActivity extends AppCompatActivity
             float b = Float.valueOf(bearing);
 
 
-            Polyline line = map.addPolyline(new PolylineOptions().clickable(true).addAll(coordinates));
-            line.setEndCap(new RoundCap());
-            line.setStartCap(new RoundCap());
-            line.setColor(Color.parseColor(col));
-            line.setWidth(12);
+            Polyline walkline = map.addPolyline(new PolylineOptions().clickable(true).addAll(coordinates));
+            walkline.setEndCap(new RoundCap());
+            walkline.setStartCap(new RoundCap());
+            walkline.setColor(Color.parseColor(walk_col));
+            walkline.setWidth(12);
+
+            Polyline busline = map.addPolyline(new PolylineOptions().clickable(true).addAll(bus_ride));
+            busline.setEndCap(new RoundCap());
+            busline.setStartCap(new RoundCap());
+            busline.setColor(Color.parseColor(bus_col));
+            busline.setWidth(12);
 
             CameraPosition curr = map.getCameraPosition();
 
