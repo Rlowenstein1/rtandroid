@@ -20,7 +20,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -51,7 +54,10 @@ import com.google.android.gms.tasks.Task;
 import org.json.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity
     public List<LatLng> coordinates;
 
     //local collection of GT buildings with coordinates
-    public JSONObject gtBuildings;
+    public JSONArray gtBuildings;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -91,6 +97,9 @@ public class MainActivity extends AppCompatActivity
     //Keys for storing activity state
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
+
+    //Map of Building Names to Coordinates
+    private static Map<String, LatLng> buildingMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +130,7 @@ public class MainActivity extends AppCompatActivity
 
         queue = Volley.newRequestQueue(getApplicationContext());
         getGTBuildings();
+
     }
 
     /**
@@ -197,17 +207,48 @@ public class MainActivity extends AppCompatActivity
 
     public void getGTBuildings() {
         String gtCall = "https://m.gatech.edu/api/gtplaces/buildings";
-        JsonObjectRequest call = new JsonObjectRequest(Request.Method.GET, gtCall, (JSONObject) null, new Response.Listener<JSONObject>() {
+        JsonArrayRequest call = new JsonArrayRequest(gtCall, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(JSONArray response) {
                 gtBuildings = response;
+                for (int i = 0; i < gtBuildings.length(); i++) {
+                    try {
+                       JSONObject place = gtBuildings.getJSONObject(i);
+                       String name = place.getString("name");
+                       double lat = place.getDouble("latitude");
+                       double lon = place.getDouble("longitude");
+                       buildingMap.put(name, new LatLng(lat, lon));
+                    } catch (JSONException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+
+                Spinner dd = findViewById(R.id.spinner);
+                List<String> buildings = new ArrayList<>();
+                Iterator itr = buildingMap.keySet().iterator();
+
+                while (itr.hasNext()) {
+                    String name = (String) itr.next();
+                    buildings.add(name);
+                }
+
+                String[] b = new String[buildings.size()];
+                b = buildings.toArray(b);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, b);
+
+                dd.setAdapter(adapter);
+
             }
+
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //TODO
+                System.out.println(error.getMessage());
             }
         });
+
+        queue.add(call);
     }
 
     /**
@@ -228,7 +269,6 @@ public class MainActivity extends AppCompatActivity
 
         //sets misc fields for the map object
         setUpMap();
-
     }
 
     public void setUpMap() {
@@ -420,7 +460,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (curr_col == next_col) {
                     tempPoints.add(curr_point);
-                } else if (curr_col == Color.parseColor("#ffcc00") && curr_col != next_col){
+                } else if (next_col == 0) {
                     tempPoints.add(curr_point);
 
                     //Create Snap-To-Road Path
@@ -466,7 +506,7 @@ public class MainActivity extends AppCompatActivity
                 .target(coordinates.get(0))
                 .zoom(20)
                 .bearing(360 - b)
-                .tilt(b)
+                .tilt(45)
                 .build();
 
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));

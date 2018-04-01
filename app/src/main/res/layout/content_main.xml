@@ -39,6 +39,12 @@
             android:hint="Start Longitude"
             android:inputType="numberSigned|numberDecimal" />
 
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown" />
+
         <EditText
             android:id="@+id/endLat"
             android:layout_width="match_parent"
@@ -62,6 +68,7 @@
             android:layout_height="wrap_content"
             android:text="Submit"
             android:onClick="pathHandler" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
