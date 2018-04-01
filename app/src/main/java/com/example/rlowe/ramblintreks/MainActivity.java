@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.Spinner;
@@ -54,6 +55,7 @@ import com.google.android.gms.tasks.Task;
 import org.json.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -223,7 +225,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
 
-                Spinner dd = findViewById(R.id.spinner);
+                //Spinner dd = findViewById(R.id.spinner);
                 List<String> buildings = new ArrayList<>();
                 Iterator itr = buildingMap.keySet().iterator();
 
@@ -235,9 +237,15 @@ public class MainActivity extends AppCompatActivity
                 String[] b = new String[buildings.size()];
                 b = buildings.toArray(b);
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, b);
+                Arrays.sort(b);
 
-                dd.setAdapter(adapter);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_dropdown_item_custom, b);
+
+                //dd.setAdapter(adapter);
+
+                AutoCompleteTextView actv = findViewById(R.id.autoCompleteTextView);
+                actv.setAdapter(adapter);
+                actv.setThreshold(3);
 
             }
 
@@ -324,17 +332,22 @@ public class MainActivity extends AppCompatActivity
     public void pathHandler(View view) {
         double startLatitude = mLastKnownLocation.getLatitude();
         double startLongitude = mLastKnownLocation.getLongitude();
-        EditText endLatText = (EditText)findViewById(R.id.endLat);
-        EditText endLongText = (EditText)findViewById(R.id.endLong);
-        double endLatitude = Double.parseDouble(endLatText.getText().toString());
-        double endLongitude = Double.parseDouble(endLongText.getText().toString());
+        //EditText endLatText = (EditText)findViewById(R.id.endLat);
+        //EditText endLongText = (EditText)findViewById(R.id.endLong);
+        //double endLatitude = Double.parseDouble(endLatText.getText().toString());
+        //double endLongitude = Double.parseDouble(endLongText.getText().toString());
+        //Spinner loc = findViewById(R.id.spinner);
+        //String dest = loc.getSelectedItem().toString();
+        AutoCompleteTextView a= findViewById(R.id.autoCompleteTextView);
+        String dest = a.getEditableText().toString();
+        LatLng endPoint = buildingMap.get(dest);
 
         JSONObject coords = new JSONObject();
         try {
             coords.put("startLatitude", startLatitude);
             coords.put("startLongitude", startLongitude);
-            coords.put("endLatitude", endLatitude);
-            coords.put("endLongitude", endLongitude);
+            coords.put("endLatitude", endPoint.latitude);
+            coords.put("endLongitude", endPoint.longitude);
         } catch (JSONException e) {
             System.out.println(e.getMessage());
         }
@@ -537,12 +550,12 @@ public class MainActivity extends AppCompatActivity
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
 
                             //Fills Start Coordinates Text Boxes with Current Location
-                            EditText startLatText = (EditText)findViewById(R.id.startLat);
-                            startLatText.setText(Double.toString(mLastKnownLocation.getLatitude()));
-                            EditText startLongText = (EditText)findViewById(R.id.startLong);
-                            startLongText.setText(Double.toString(mLastKnownLocation.getLongitude()));
-                            EditText endLatText = (EditText)findViewById(R.id.endLat);
-                            endLatText.requestFocus();
+                            //EditText startLatText = (EditText)findViewById(R.id.startLat);
+                            //startLatText.setText(Double.toString(mLastKnownLocation.getLatitude()));
+                            //EditText startLongText = (EditText)findViewById(R.id.startLong);
+                            //startLongText.setText(Double.toString(mLastKnownLocation.getLongitude()));
+                            //EditText endLatText = (EditText)findViewById(R.id.endLat);
+                            //endLatText.requestFocus();
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());

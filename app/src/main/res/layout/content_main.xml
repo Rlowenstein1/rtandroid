@@ -17,50 +17,17 @@
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="270dp"
+            android:layout_height="413dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:context="com.example.mapwithmarker.MapsMarkerActivity" />
 
-        <EditText
-            android:id="@+id/startLat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:defaultFocusHighlightEnabled="false"
-            android:ems="10"
-            android:hint="Start Latitude"
-            android:inputType="numberSigned|numberDecimal" />
 
-        <EditText
-            android:id="@+id/startLong"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Start Longitude"
-            android:inputType="numberSigned|numberDecimal" />
 
-        <Spinner
-            android:id="@+id/spinner"
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:spinnerMode="dropdown" />
-
-        <EditText
-            android:id="@+id/endLat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:defaultFocusHighlightEnabled="true"
-            android:ems="10"
-            android:hint="End Latitude"
-            android:inputType="numberSigned|numberDecimal" />
-
-        <EditText
-            android:id="@+id/endLong"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="End Longitude"
-            android:inputType="numberSigned|numberDecimal" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/submitButton"
