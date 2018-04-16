@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintWidth_max="500dp"
+    app:layout_constraintWidth_min="50dp"
+    tools:context="com.example.rlowe.ramblintreks.ScheduleActivity">
+
+    <!--app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/AddEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add An Event"
+            app:layout_editor_absoluteX="125dp"
+            app:layout_editor_absoluteY="450dp"
+            tools:layout_editor_absoluteX="112dp"
+            tools:layout_editor_absoluteY="528dp" />
+
+        <com.alamkanak.weekview.WeekView
+            android:id="@+id/weekView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:columnGap="8dp"
+            app:dayBackgroundColor="#05000000"
+            app:eventTextColor="@android:color/white"
+            app:headerColumnBackground="#ffffffff"
+            app:headerColumnPadding="8dp"
+            app:headerColumnTextColor="#8f000000"
+            app:headerRowBackgroundColor="#ffefefef"
+            app:headerRowPadding="12dp"
+            app:hourHeight="60dp"
+            app:noOfVisibleDays="3"
+            app:textSize="12sp"
+            app:todayBackgroundColor="#1848adff"
+            tools:layout_editor_absoluteX="-2dp" />
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
