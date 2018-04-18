@@ -8,7 +8,7 @@
 
             android:title="@string/transPref" />
         <item
-
+            android:id="@+id/sched_Button"
             android:title="@string/sched" />
         <item
 

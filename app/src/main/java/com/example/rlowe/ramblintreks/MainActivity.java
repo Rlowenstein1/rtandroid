@@ -1,5 +1,6 @@
 package com.example.rlowe.ramblintreks;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Camera;
 import android.graphics.Color;
@@ -145,6 +146,11 @@ public class MainActivity extends AppCompatActivity
             outState.putParcelable(KEY_LOCATION, mLastKnownLocation);
             super.onSaveInstanceState(outState);
         }
+    }
+
+    public void startSchedule(View view) {
+        Intent intent = new Intent(this, ScheduleActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -322,6 +328,13 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        switch(id) {
+
+            case R.id.sched_Button:
+                startSchedule(item.getActionView());
+            default:
+
+        }
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
