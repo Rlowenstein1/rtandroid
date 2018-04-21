@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
             <EditText
                 android:id="@+id/Summary"
                 android:layout_width="match_parent"
@@ -22,6 +23,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Event Name..."
+                android:textCursorDrawable="@drawable/color_cursor"
                 android:inputType="textPersonName" />
 
             <EditText
@@ -32,6 +34,7 @@
                 android:ems="10"
                 android:focusable="false"
                 android:hint="Choose a date..."
+                android:textCursorDrawable="@drawable/color_cursor"
                 android:inputType="date"
                 tools:clickable="true" />
 
@@ -50,6 +53,7 @@
                 android:ems="10"
                 android:focusable="false"
                 android:hint="Choose a start time..."
+                android:textCursorDrawable="@drawable/color_cursor"
                 android:inputType="time"
                 tools:clickable="true" />
 
@@ -68,6 +72,7 @@
                 android:ems="10"
                 android:focusable="false"
                 android:hint="Choose an end time..."
+                android:textCursorDrawable="@drawable/color_cursor"
                 android:inputType="time"
                 tools:clickable="true" />
 
@@ -77,6 +82,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:visibility="gone" />
+
+            <Spinner
+                android:id="@+id/new_location_spin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
         </LinearLayout>
 

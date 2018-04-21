@@ -43,4 +43,5 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
     compile 'com.github.quivr:android-week-view:2.3.0'
+    compile 'com.google.android.gms:play-services-auth:11.8.0'
 }

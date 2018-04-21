@@ -16,9 +16,13 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TimePicker;
 
 import com.alamkanak.weekview.MonthLoader;
@@ -26,6 +30,7 @@ import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -44,7 +49,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -61,7 +69,7 @@ public class ScheduleActivity extends AppCompatActivity implements
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static ArrayList<Event> week;
-    private static final String APP_NAME = "schedulintreks";
+    private static final String APP_NAME = "@string/app_name";
 
     GoogleAccountCredential credentials;
     WeekView weekView;
@@ -135,6 +143,20 @@ public class ScheduleActivity extends AppCompatActivity implements
                     }
                 });
 
+                List<String> buildings = new ArrayList<>();
+                if(MainActivity.buildingMap != null) {
+                    Iterator itr = MainActivity.buildingMap.keySet().iterator();
+
+                    while (itr.hasNext()) {
+                        String name = (String) itr.next();
+                        buildings.add(name);
+                    }
+
+                    Collections.sort(buildings);
+                }
+
+                Spinner spinner = (Spinner) d.findViewById(R.id.new_location_spin);
+                spinner.setAdapter(new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_dropdown_item_custom, buildings));
 
                 d.findViewById(R.id.create).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -160,10 +182,13 @@ public class ScheduleActivity extends AppCompatActivity implements
                         cal.set(year, month, day, endHour, endMin);
                         DateTime endDateTime = new DateTime(cal.getTime());
 
+
+
                         Event newEvent = new Event()
                                 .setSummary(((EditText)d.findViewById(R.id.Summary)).getText().toString())
                                 .setStart(new EventDateTime().setDateTime(startDateTime))
-                                .setEnd(new EventDateTime().setDateTime(endDateTime));
+                                .setEnd(new EventDateTime().setDateTime(endDateTime))
+                                .setLocation((String)(((Spinner) d.findViewById(R.id.new_location_spin)).getSelectedItem()));
                         HttpTransport transport = AndroidHttp.newCompatibleTransport();
                         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
                         com.google.api.services.calendar.Calendar service = new com.google.api.services.calendar.Calendar.Builder(
@@ -189,6 +214,14 @@ public class ScheduleActivity extends AppCompatActivity implements
         DatePicker dp = (DatePicker) d.findViewById(R.id.datePicker);
         dp.setVisibility(View.GONE);
         ((EditText) d.findViewById(R.id.DateText)).setText(String.format("%d-%d-%d", dp.getMonth(), dp.getDayOfMonth(), dp.getYear()));
+
+        TimePicker tp1 = (TimePicker) d.findViewById(R.id.timePicker);
+        tp1.setVisibility(View.GONE);
+        ((EditText) d.findViewById(R.id.TimeText)).setText(String.format("%d:%d", tp1.getCurrentHour(), tp1.getCurrentMinute()));
+
+        TimePicker tp2 = (TimePicker) d.findViewById(R.id.timePicker2);
+        tp2.setVisibility(View.GONE);
+        ((EditText) d.findViewById(R.id.timeEndText)).setText(String.format("%d:%d", tp2.getCurrentHour(), tp1.getCurrentMinute()));
     }
 
     @Override
@@ -441,9 +474,9 @@ public class ScheduleActivity extends AppCompatActivity implements
         private com.google.api.services.calendar.Calendar mService = null;
         private Exception mLastError = null;
         private Event event;
-        private ScheduleActivity mainActivity;
+        private ScheduleActivity scheduleActivity;
 
-        InsertEventTask(GoogleAccountCredential credential, Event event, ScheduleActivity mainActivity) {
+        InsertEventTask(GoogleAccountCredential credential, Event event, ScheduleActivity scheduleActivity) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.calendar.Calendar.Builder(
@@ -451,7 +484,7 @@ public class ScheduleActivity extends AppCompatActivity implements
                     .setApplicationName("Schedule")
                     .build();
             this.event = event;
-            this.mainActivity = mainActivity;
+            this.scheduleActivity = scheduleActivity;
         }
 
         @Override
@@ -459,7 +492,7 @@ public class ScheduleActivity extends AppCompatActivity implements
             try {
                 mService.events().insert("primary", event).execute();
                 System.out.println("Inserted event");
-                mainActivity.getResultsFromApi();
+                scheduleActivity.getResultsFromApi();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -560,8 +593,8 @@ public class ScheduleActivity extends AppCompatActivity implements
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
                             ScheduleActivity.REQUEST_AUTHORIZATION);
                 } else {
-                    System.out.println("The following error occurred:\n"
-                            + mLastError.getMessage());
+                    System.out.println("The following error occurred:\n");
+                    mLastError.printStackTrace();
                 }
             } else {
                 System.out.println("Request cancelled.");

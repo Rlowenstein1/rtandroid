@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
     private static final String KEY_LOCATION = "location";
 
     //Map of Building Names to Coordinates
-    private static Map<String, LatLng> buildingMap = new HashMap<>();
+    public static Map<String, LatLng> buildingMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

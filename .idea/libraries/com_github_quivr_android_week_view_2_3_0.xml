@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="com.github.quivr:android-week-view-2.3.0">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/android-week-view-2.3.0.aar/4b3f9333480b7e82859d14651d2f9b6d/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/android-week-view-2.3.0.aar/4b3f9333480b7e82859d14651d2f9b6d/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.quivr/android-week-view/2.3.0/17f360f92032e4861722c4754d265a56c54c5721/android-week-view-2.3.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
